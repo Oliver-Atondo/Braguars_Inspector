@@ -1,0 +1,22 @@
+{
+    "iOS": {
+        "platformName": "iOS",
+        "platformVersion": "18.2.1",
+        "deviceName": "iPhone14ProMax",
+        "automationName": "XCUITest",
+        "udid": "00008120-0002346C2208201E",
+        "includeSafariInWebviews": true,
+        "newCommandTimeout": 3600,
+        "connectHardwareKeyboard": true
+    },
+    "Android": {
+        "platformName": "ANDROID",
+        "appPackage": "com.dexcom.g7",
+        "automationName": "uiautomator2",
+        "udid": "192.168.1.198:5555",
+        "deviceName": "Galaxy S21 5G",
+        "noReset": "true",
+        "fullReset": "false",
+        "newCommandTimeout": 3600
+    }
+}
