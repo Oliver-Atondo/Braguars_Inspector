@@ -184,13 +184,14 @@ class AppiumInspector(QWidget):
     def print_all_ids(self):
         qt_image = ImageQt.ImageQt(self.original_image)
         device_image = QImage(qt_image)
+        return device_image
         #generator = AppiumIDPrinter(device_image, self.elements)
         #return generator.export_html_overlay()
 
     def calculate_bounds(self, e):
         if self.platform == 'iOS':
             try:
-                rect = e.rect  # WebElement.rect ya extrae x, y, width, height en dict
+                rect = e.rect
                 x = rect.get("x", 0)
                 y = rect.get("y", 0)
                 w = rect.get("width", 0)

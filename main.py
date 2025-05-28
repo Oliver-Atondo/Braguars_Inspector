@@ -9,6 +9,9 @@ from appium import webdriver
 from LOGIC.AppiumInspector import AppiumInspector
 from LOGIC.AppiumRecorder import AppiumRecorder
 import base64
+import cv2
+import numpy as np
+from PySide6.QtGui import QImage
 
 def save_base64_to_png(base64_string, output_path):
     try:
@@ -94,7 +97,36 @@ def launch_dual_inspector(caps1: dict, caps2: dict):
         def save_steps():
             recorder.save_to_file()
 
-        print_btn.clicked.connect(on_print_all)
+        def qimage_to_numpy(qimage: QImage) -> np.ndarray:
+            qimage = qimage.convertToFormat(QImage.Format.Format_RGB888)
+            width = qimage.width()
+            height = qimage.height()
+            ptr = qimage.bits()
+            arr = np.array(ptr, dtype=np.uint8).reshape((height, width, 3))
+            return arr
+
+        def actua_testing():
+            qimage = panel2.print_all_ids()
+            img = qimage_to_numpy(qimage)
+            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+            template = cv2.imread('android_element.png', 0)
+            if template is None:
+                print("Error: No se pudo cargar 'android_element.png'")
+                return
+
+            w, h = template.shape[::-1]
+
+            res = cv2.matchTemplate(img_gray, template, cv2.TM_SQDIFF)
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+            top_left = min_loc
+            bottom_right = (top_left[0] + w, top_left[1] + h)
+            bounds = [top_left[0], top_left[1], bottom_right[0], bottom_right[1]]
+            print(bounds)
+            panel2.tap_element_center(bounds)
+
+
+        print_btn.clicked.connect(actua_testing)
         refresh_btn.clicked.connect(refresh_screenshots)
         take_a_shot.clicked.connect(save_record)
         save_recording.clicked.connect(save_steps)

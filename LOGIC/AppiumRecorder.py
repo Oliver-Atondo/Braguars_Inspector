@@ -30,7 +30,6 @@ class AppiumRecorder:
     def save_to_file(self, filepath="recording.json"):
         with open(filepath, 'w') as json_file:
             json.dump(self.click_records, json_file, indent=4)
-            print("SI LLEGO")
 
 def generate_ios_locators(elem):
     name = elem.attrib.get("name", "")

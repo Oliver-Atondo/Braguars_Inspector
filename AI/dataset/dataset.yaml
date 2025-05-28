@@ -1,0 +1,8 @@
+path: ./dataset
+train: images/flat_train
+val: images/val
+
+names:
+  0: connections_tab
+  1: novo_cell
+  2: continue_button
