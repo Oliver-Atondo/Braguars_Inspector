@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import sys
-from PySide6.QtWidgets import (
-    QApplication, QWidget, QSplitter, QVBoxLayout, QHBoxLayout, QPushButton
-)
+from PySide6.QtWidgets import QApplication, QWidget, QSplitter, QVBoxLayout, QHBoxLayout, QPushButton
 from PySide6.QtCore import Qt
 from appium.options.common.base import AppiumOptions
 from appium import webdriver
-from LOGIC.AppiumInspector import AppiumInspector
-from LOGIC.AppiumRecorder import AppiumRecorder
+from logic.AppiumInspector import AppiumInspector
+from logic.AppiumRecorder import AppiumRecorder
 import base64
+
+from gui.main_window import MainWindow
 
 def save_base64_to_png(base64_string, output_path):
     try:
@@ -107,25 +107,54 @@ def launch_dual_inspector(caps1: dict, caps2: dict):
         print(f"[ERROR] No se pudo lanzar el inspector dual: {e}")
 
 if __name__ == "__main__":
-    launch_dual_inspector(
-        caps1={
+    # launch_dual_inspector(
+    #     caps1={
+    #         "platformName": "iOS",
+    #         "platformVersion": "18.2.1",
+    #         "deviceName": "iPhone14ProMax",
+    #         "automationName": "XCUITest",
+    #         "udid": "00008120-0002346C2208201E",
+    #         "includeSafariInWebviews": True,
+    #         "newCommandTimeout": 3600,
+    #         "connectHardwareKeyboard": True
+    #     },
+    #     caps2={
+    #         "platformName": "ANDROID",
+    #         "appPackage": "com.dexcom.g7",
+    #         "automationName": "uiautomator2",
+    #         "udid": "192.168.1.198:5555",
+    #         "deviceName": "Galaxy S21 5G",
+    #         "noReset": True,
+    #         "fullReset": False,
+    #         "newCommandTimeout": 3600
+    #     }
+    # )
+
+    capabilities = {
+        "cap1": {
             "platformName": "iOS",
-            "platformVersion": "18.2.1",
+            "platformVersion": "18.4",
             "deviceName": "iPhone14ProMax",
             "automationName": "XCUITest",
-            "udid": "00008120-0002346C2208201E",
+            "udid": "00008110-0005554A1460401E",
             "includeSafariInWebviews": True,
             "newCommandTimeout": 3600,
-            "connectHardwareKeyboard": True
+            "connectHardwareKeyboard": True,
+            # "showXcodeLog": True
         },
-        caps2={
+        "caps2": {
             "platformName": "ANDROID",
-            "appPackage": "com.dexcom.g7",
             "automationName": "uiautomator2",
-            "udid": "192.168.1.198:5555",
             "deviceName": "Galaxy S21 5G",
             "noReset": True,
             "fullReset": False,
             "newCommandTimeout": 3600
         }
-    )
+    }
+
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.load(capabilities)
+    window.resize(1200, 800)
+    window.show()
+    app.exec()

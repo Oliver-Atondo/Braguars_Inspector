@@ -1,18 +1,14 @@
 import io
 import re
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QHBoxLayout, QTableWidget, QTableWidgetItem, QVBoxLayout, QSplitter,
-    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QPushButton, QSizePolicy
+    QWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QSplitter,
+    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QSizePolicy
 )
-from PySide6.QtGui import QPixmap, QPen, QColor, QImage
+from PySide6.QtGui import QPixmap, QPen, QImage
 from PySide6.QtCore import Qt, QRectF, QEvent
 from PIL import Image, ImageQt
-from appium import webdriver
-from appium.options.common.base import AppiumOptions
 from lxml import etree
-import sys
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.actions.pointer_input import PointerInput
+
 from selenium.webdriver.common.actions.interaction import POINTER
 import base64
 import time
@@ -41,7 +37,7 @@ class AppiumInspector(QWidget):
 
         self.hovered_element = None
         self.current_clicked_element = None
-        self.currect_selected_element = None
+        self.current_selected_element = None
 
         layout = QVBoxLayout(self)
         splitter = QSplitter(Qt.Horizontal)
