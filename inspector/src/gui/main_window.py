@@ -1,49 +1,43 @@
+
 import io, os, uuid, re
 
 from PIL import Image
 from PySide6.QtWidgets import QMainWindow,  QWidget, QSplitter, QVBoxLayout, QHBoxLayout, QPushButton
 from PySide6.QtCore import Qt
-from appium import webdriver
-from appium.options.common.base import AppiumOptions
 
-from logic.AppiumInspector import AppiumInspector
-from logic.AppiumRecorder import AppiumRecorder
+from logic import AppiumDriver
+from gui import InspectionPanel
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self._panels = []
-        self._recorder = AppiumRecorder()
-
+        
         self.setWindowTitle("Inspector")
+
+        self._panels: list[InspectionPanel] = []
+        self._main_layout = QVBoxLayout(self)
+
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        self._main_layout = QVBoxLayout(self)
         central_widget.setLayout(self._main_layout)
-        self._create_buttons()
-
-
-    def _create_buttons(self):
+        
         btn_bar = QHBoxLayout()
-        print_btn = QPushButton("Print All IDs (both)")
         self._refresh_btn = QPushButton("Refresh Screenshots")
-        take_a_shot = QPushButton("Record Step")
-        save_recording = QPushButton("Save Recording")
+        save_recording = QPushButton("Capture")
 
-        btn_bar.addWidget(print_btn)
         btn_bar.addWidget(self._refresh_btn)
-        btn_bar.addWidget(take_a_shot)
         btn_bar.addWidget(save_recording)
         save_recording.clicked.connect(self._save)
 
         self._main_layout.addLayout(btn_bar)
+
 
     def _save(self):
         for panel in self._panels:
             elem = panel.current_selected_element
             if elem is None:
                 continue
+
             output_dir = "../dataset/images/train"
             os.makedirs(output_dir, exist_ok=True)
             
@@ -73,15 +67,19 @@ class MainWindow(QMainWindow):
                 
     def load(self, capabilities: dict):
         splitter = QSplitter(Qt.Horizontal)
-        
-        for _, item in capabilities.items():
-            opts = AppiumOptions()
-            opts.load_capabilities(item)
-            driver = webdriver.Remote("http://localhost:4723", options=opts)
-            
-            panel = AppiumInspector(driver, item["platformName"])
+
+        index = 0 # TODO: Refactor this
+        for _, cap in capabilities.items():
+            driver = AppiumDriver("http://localhost:4723", cap)
+            panel = InspectionPanel(driver)
             self._panels.append(panel)
             splitter.addWidget(panel)
+            splitter.setStretchFactor(index, 1)
+            index += 1
+
+        total_panels = splitter.count()
+        panel_size = int(splitter.size().width() / total_panels)
+        splitter.setSizes([panel_size] * total_panels)
         
         self._refresh_btn.clicked.connect(self._refresh_screenshots)
         self._main_layout.addWidget(splitter)
@@ -90,8 +88,8 @@ class MainWindow(QMainWindow):
     def _refresh_screenshots(self):
         for panel in self._panels:
             panel.refresh_screenshot()
-    
 
+    
 def _get_bounds(element, platform) -> dict:
     if platform == "iOS":
         return {
@@ -111,3 +109,4 @@ def _get_bounds(element, platform) -> dict:
             "width": float(x2) - float(x1),
             "height": float(y2) - float(y1),
         }
+    
