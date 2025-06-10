@@ -7,4 +7,3 @@ class AppiumDriver(webdriver.Remote):
         options = AppiumOptions()
         options.load_capabilities(capabilities)
         super().__init__(url, options=options)
-

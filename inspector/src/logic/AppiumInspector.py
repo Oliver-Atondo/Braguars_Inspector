@@ -33,7 +33,7 @@ class AppiumInspector(QWidget):
         parser = etree.XMLParser(recover=True)
         root = etree.fromstring(src.encode('utf-8'), parser)
         self.elements = []
-        self._extract_bounds(root)
+        _extract_bounds(root)
 
         self.hovered_element = None
         self.current_clicked_element = None
@@ -95,25 +95,6 @@ class AppiumInspector(QWidget):
 
         splitter.addWidget(self.info_container)
         splitter.setSizes([self.original_image.width, 300])
-
-    def _extract_bounds(self, elem):
-        for child in elem:
-            self._extract_bounds(child)
-
-        b = elem.get('bounds')
-        if b:
-            m = re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", b)
-            if m:
-                x1, y1, x2, y2 = map(int, m.groups())
-                self.elements.append((x1, y1, x2 - x1, y2 - y1, elem))
-        else:
-            coords = (elem.get('x'), elem.get('y'), elem.get('width'), elem.get('height'))
-            if all(coords):
-                try:
-                    x, y, w, h = map(float, coords)
-                    self.elements.append((int(x), int(y), int(w), int(h), elem))
-                except ValueError:
-                    pass
 
     def show_element_info(self, elem):
         def val(key):
@@ -476,3 +457,23 @@ def build_android_ui_automator(elem):
     else:
         return None
     
+
+
+def _extract_bounds(self, elem):
+    for child in elem:
+        _extract_bounds(child)
+
+    b = elem.get('bounds')
+    if b:
+        m = re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", b)
+        if m:
+            x1, y1, x2, y2 = map(int, m.groups())
+            self.elements.append((x1, y1, x2 - x1, y2 - y1, elem))
+    else:
+        coords = (elem.get('x'), elem.get('y'), elem.get('width'), elem.get('height'))
+        if all(coords):
+            try:
+                x, y, w, h = map(float, coords)
+                self.elements.append((int(x), int(y), int(w), int(h), elem))
+            except ValueError:
+                pass
